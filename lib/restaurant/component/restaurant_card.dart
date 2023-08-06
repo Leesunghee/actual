@@ -1,4 +1,5 @@
 import 'package:actual/common/const/colors.dart';
+import 'package:actual/restaurant/model/restaurant_model.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantCard extends StatelessWidget {
@@ -23,14 +24,32 @@ class RestaurantCard extends StatelessWidget {
   // 평균 평점
   final double ratings;
 
-  const RestaurantCard({required this.image,
-    required this.name,
-    required this.tags,
-    required this.ratingsCount,
-    required this.deliveryTime,
-    required this.deliveryFee,
-    required this.ratings,
-    super.key});
+  const RestaurantCard(
+      {required this.image,
+      required this.name,
+      required this.tags,
+      required this.ratingsCount,
+      required this.deliveryTime,
+      required this.deliveryFee,
+      required this.ratings,
+      super.key});
+
+  factory RestaurantCard.fromModel({
+    required RestaurantModel model,
+  }) {
+    return RestaurantCard(
+      image: Image.network(
+        model.thumbUrl,
+        fit: BoxFit.cover,
+      ),
+      name: model.name,
+      tags: model.tags,
+      ratingsCount: model.ratingsCount,
+      deliveryTime: model.deliveryTime,
+      deliveryFee: model.deliveryFee,
+      ratings: model.ratings,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,9 +79,10 @@ class RestaurantCard extends StatelessWidget {
                 style: const TextStyle(
                   color: BODY_TEXT_COLOR,
                   fontSize: 14.0,
-                )
+                )),
+            const SizedBox(
+              height: 8.0,
             ),
-            const SizedBox(height: 8.0,),
             Row(
               children: [
                 _IconText(
@@ -110,11 +130,7 @@ class _IconText extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _IconText({
-    required this.icon,
-    required this.label,
-    super.key
-  });
+  const _IconText({required this.icon, required this.label, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +141,9 @@ class _IconText extends StatelessWidget {
           color: PRIMARY_COLOR,
           size: 14.0,
         ),
-        const SizedBox(width: 8.0,),
+        const SizedBox(
+          width: 8.0,
+        ),
         Text(
           label,
           style: const TextStyle(

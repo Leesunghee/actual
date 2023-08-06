@@ -33,3 +33,4 @@ class RestaurantDetailScreen extends StatelessWidget {
     );
   }
 }
+

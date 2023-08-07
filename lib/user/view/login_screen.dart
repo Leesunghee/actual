@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:actual/common/const/data.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../common/component/custom_text_form_field.dart';
 import '../../common/const/colors.dart';
@@ -19,7 +18,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   String username = '';
   String password = '';
 
@@ -35,17 +33,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return DefaultLayout(
         child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: SafeArea(
-      top: true,
-      bottom: false,
-      child: Padding(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      child: SafeArea(
+        top: true,
+        bottom: false,
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const _Title(),
-              const SizedBox(height: 16.0,),
+              const SizedBox(
+                height: 16.0,
+              ),
               const _SubTitle(),
               Image.asset(
                 'asset/img/misc/logo.png',
@@ -57,7 +57,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   username = value;
                 },
               ),
-              const SizedBox(height: 16.0,),
+              const SizedBox(
+                height: 16.0,
+              ),
               CustomTextFormField(
                 hintText: "비밀번호를 입력해주세요",
                 onChanged: (String value) {
@@ -65,7 +67,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 obscureText: true,
               ),
-              const SizedBox(height: 16.0,),
+              const SizedBox(
+                height: 16.0,
+              ),
               ElevatedButton(
                 onPressed: () async {
                   // ID:비밀번호
@@ -76,23 +80,23 @@ class _LoginScreenState extends State<LoginScreen> {
                   String token = stringToBase64.encode(rawString);
 
                   final resp = await dio.post('http://$ip/auth/login',
-                    options: Options(
-                      headers: {
+                      options: Options(headers: {
                         'authorization': 'Basic $token',
-                      }
-                    )
-                  );
+                      }));
 
                   final refreshToken = resp.data['refreshToken'];
                   final accessToken = resp.data['accessToken'];
 
-                  await storage.write(key: REFRESH_TOKEN_KEY, value: refreshToken);
-                  await storage.write(key: ACCESS_TOKEN_KEY, value: accessToken);
+                  await storage.write(
+                      key: REFRESH_TOKEN_KEY, value: refreshToken);
+                  await storage.write(
+                      key: ACCESS_TOKEN_KEY, value: accessToken);
 
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => RootTab(),),
+                    MaterialPageRoute(
+                      builder: (_) => RootTab(),
+                    ),
                   );
-
                 },
                 child: Text('로그인'),
                 style: ElevatedButton.styleFrom(
@@ -100,8 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () async {
-                },
+                onPressed: () async {},
                 child: Text('회원가입'),
                 style: TextButton.styleFrom(
                   primary: Colors.black,
@@ -109,9 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ],
           ),
+        ),
       ),
-    ),
-        ));
+    ));
   }
 }
 

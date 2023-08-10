@@ -1,4 +1,5 @@
 import 'package:actual/common/const/data.dart';
+import 'package:actual/common/dio/dio.dart';
 import 'package:actual/product/component/product_card.dart';
 import 'package:actual/restaurant/component/restaurant_card.dart';
 import 'package:actual/restaurant/model/restaurant_detail_model.dart';
@@ -15,6 +16,12 @@ class RestaurantDetailScreen extends StatelessWidget {
 
   Future<RestaurantDetailModel> getRestaurantDetail() async {
     final dio = Dio();
+
+    dio.interceptors.add(
+      CustomInterceptor(
+        storage: storage,
+      ),
+    );
 
     final repository = RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant');
 
@@ -71,7 +78,7 @@ class RestaurantDetailScreen extends StatelessWidget {
     required List<RestaurantProductModel> products,
   }) {
     return SliverPadding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {

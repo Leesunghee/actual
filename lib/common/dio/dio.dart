@@ -1,6 +1,20 @@
 import 'package:actual/common/const/data.dart';
+import 'package:actual/common/secure_storage/secure_storage.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final dioProvider = Provider<Dio>((ref) {
+  final dio = Dio();
+
+  final storage = ref.watch(secureStorageProvider);
+
+  dio.interceptors.add(
+    CustomInterceptor(storage: storage),
+  );
+
+  return dio;
+});
 
 class CustomInterceptor extends Interceptor {
   final FlutterSecureStorage storage;
@@ -9,15 +23,14 @@ class CustomInterceptor extends Interceptor {
     required this.storage,
   });
 
-
   // 1) 요청을 보낼 때
   // 요청이 보내질때 마다
   // 만약에 요청의 Header에 accessToken: true라는 값이 있다면,
   // 실제 토큰을 가져와서 (storage에서) authorization: bearer $token으로
   // 헤더를 변경한다.
   @override
-  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-
+  Future<void> onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
     print('[REQ] [${options.method}] ${options.uri}');
 
     if (options.headers['accessToken'] == 'true') {
@@ -46,14 +59,16 @@ class CustomInterceptor extends Interceptor {
   // 2) 응답을 보낼 때
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    print('[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
+    print(
+        '[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
 
     return super.onResponse(response, handler);
   }
 
   // 3) 에러가 났을 때
   @override
-  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(
+      DioException err, ErrorInterceptorHandler handler) async {
     // 401에러가 났을 때 (status code)
     // 토큰을 재발급 또는 시도를 하고, 토큰이 재발급되면
     // 다시 새로운 토큰으로 요청을 한다.
@@ -99,8 +114,7 @@ class CustomInterceptor extends Interceptor {
         final response = await dio.fetch(options);
 
         return handler.resolve(response);
-
-      } on DioError catch(e) {
+      } on DioError catch (e) {
         return handler.reject(err);
       }
     }

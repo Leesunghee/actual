@@ -7,18 +7,10 @@ import 'package:actual/restaurant/view/restaurant_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../common/model/cursor_pagination_model.dart';
+
 class RestaurantScreen extends ConsumerWidget {
   const RestaurantScreen({super.key});
-
-  Future<List<RestaurantModel>> paginateRestaurant(WidgetRef ref) async {
-    final dio = ref.watch(dioProvider);
-
-    final resp =
-        await RestaurantRepository(dio, baseUrl: 'http://$ip/restaurant')
-            .paginate();
-
-    return resp.data;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,9 +18,9 @@ class RestaurantScreen extends ConsumerWidget {
       child: Center(
           child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: FutureBuilder<List<RestaurantModel>>(
-          future: paginateRestaurant(ref),
-          builder: (context, AsyncSnapshot<List<RestaurantModel>> snapshot) {
+        child: FutureBuilder<CursorPagination<RestaurantModel>>(
+          future: ref.watch(restaurantRepositoryProvider).paginate(),
+          builder: (context, AsyncSnapshot<CursorPagination<RestaurantModel>> snapshot) {
             // print(snapshot.error);
             // print(snapshot.data);
 
@@ -40,7 +32,7 @@ class RestaurantScreen extends ConsumerWidget {
 
             return ListView.separated(
               itemBuilder: (_, index) {
-                final pItem = snapshot.data![index];
+                final pItem = snapshot.data!.data[index];
 
                 return GestureDetector(
                     onTap: () {
@@ -59,7 +51,7 @@ class RestaurantScreen extends ConsumerWidget {
                   height: 16.0,
                 );
               },
-              itemCount: snapshot.data!.length,
+              itemCount: snapshot.data!.data.length,
             );
           },
         ),
